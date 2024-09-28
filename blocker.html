@@ -1,0 +1,106 @@
+<script>
+    document.addEventListener("keydown", function (event) {
+
+        // Ctrl + Shift + C block
+        if (event.ctrlKey && event.shiftKey && (event.keyCode == 67)) {
+            event.preventDefault();
+            return false;
+        }
+
+        // Ctrl + Shift + I block
+        if (event.ctrlKey && event.shiftKey && (event.keyCode == 73)) {
+            event.preventDefault();
+            return false;
+        }
+
+        // Ctrl + Shift + J block
+        if (event.ctrlKey && event.shiftKey && (event.keyCode == 74)) {
+            event.preventDefault();
+            return false;
+        }
+
+        // Ctrl + Shift + P block
+        if (event.ctrlKey && event.shiftKey && (event.keyCode == 80)) {
+            event.preventDefault();
+            return false;
+        }
+
+        // Ctrl + P block
+        if (event.ctrlKey && (event.keyCode == 80)) {
+            event.preventDefault();
+            return false;
+        }
+
+        // Command + Option + C block
+        if (((event.keyCode == 91) || (event.keyCode == 93)) && ((event.keyCode == 18) || (event.keyCode == 229)) && (event.keyCode == 67)) {
+            event.preventDefault();
+            return false;
+        }
+
+        // Command + Option + I block
+        if (((event.keyCode == 91) || (event.keyCode == 93)) && ((event.keyCode == 18) || (event.keyCode == 229)) && (event.keyCode == 73)) {
+            event.preventDefault();
+            return false;
+        }
+
+        // Command + Option + J block
+        if (((event.keyCode == 91) || (event.keyCode == 93)) && ((event.keyCode == 18) || (event.keyCode == 229)) && (event.keyCode == 74)) {
+            event.preventDefault();
+            return false;
+        }
+
+        // Command + Option + P block
+        if (((event.keyCode == 91) || (event.keyCode == 93)) && ((event.keyCode == 18) || (event.keyCode == 229)) && (event.keyCode == 80)) {
+            event.preventDefault();
+            return false;
+        }
+
+        // F12 block
+        if (event.keyCode == 123) {
+            event.preventDefault();
+            return false;
+        }
+
+        // Command + O block
+        if (((event.keyCode == 91) || (event.keyCode == 93)) && (event.keyCode == 79)) {
+            event.preventDefault();
+            return false;
+        }
+
+        // Command + P block
+        if (((event.keyCode == 91) || (event.keyCode == 93)) && (event.keyCode == 80)) {
+            event.preventDefault();
+            return false;
+        }
+
+    });
+
+    !function () {
+        function detectDevTool(allow) {
+            if (isNaN(+allow)) allow = 100;
+            var start = +new Date();
+            debugger;
+            var end = +new Date();
+            if (isNaN(start) || isNaN(end) || end - start > allow) {
+                alert('개발자 도구가 감지되었습니다.');
+            }
+        }
+        if (window.attachEvent) {
+            if (document.readyState === "complete" || document.readyState === "interactive") {
+                detectDevTool();
+                window.attachEvent('onresize', detectDevTool);
+                window.attachEvent('onmousemove', detectDevTool);
+                window.attachEvent('onfocus', detectDevTool);
+                window.attachEvent('onblur', detectDevTool);
+            } else {
+                setTimeout(argument.callee, 0);
+            }
+        } else {
+            window.addEventListener('load', detectDevTool);
+            window.addEventListener('resize', detectDevTool);
+            window.addEventListener('mousemove', detectDevTool);
+            window.addEventListener('focus', detectDevTool);
+            window.addEventListener('blur', detectDevTool);
+        }
+    }();
+</script>

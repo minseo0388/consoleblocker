@@ -1,0 +1,64 @@
+<script>
+    !function () {
+        var devtoolsOpen = false;
+
+        // 디버거 시간 지연 감지
+        function detectDevToolOpen() {
+            var start = new Date().getTime();
+            debugger;
+            var end = new Date().getTime();
+
+            if (end - start > 100) {
+                return true;
+            }
+            return false;
+        }
+        
+        // CSS 변경 감지
+        function detectDevToolCSS() {
+            var element = new Image();
+            Object.defineProperty(element, 'id', {
+                get: function () {
+                    devtoolsOpen = true;
+                    return '';
+                }
+            });
+            console.log(element);
+            console.clear();
+            
+            return devtoolsOpen;
+        }
+
+        // 콘솔 지연 시간 감지
+        function detectDevToolConsole() {
+            const timegap = 147;
+            let devtools = new Function("debugger;");
+            let start = performance.now();
+            devtools();
+            let end = performance.now();
+
+            if (end - start > timegap) {
+                return true;
+            }
+            return false;
+        }
+
+        // 개발자 도구 감지 및 차단
+        function detectDevTool() {
+            devtoolsOpen = detectDevToolOpen() || detectDevToolCSS() || detectDevToolConsole();
+            if (devtoolsOpen) {
+                alert('개발자 도구 감지됨.');
+            }
+        }
+
+        // 주기적 감지
+        setInterval(detectDevTool, 1000);
+
+        // 다른 이벤트 감지
+        window.addEventListener('load', detectDevTool);
+        window.addEventListener('resize', detectDevTool);
+        window.addEventListener('mousemove', detectDevTool);
+        window.addEventListener('focus', detectDevTool);
+        window.addEventListener('blur', detectDevTool);
+    }();
+</script>
