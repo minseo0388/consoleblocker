@@ -1,106 +1,140 @@
 <script>
-    document.addEventListener("keydown", function (event) {
+    // Modern console blocker with improved performance and maintainability
+    (function() {
+        'use strict';
+        
+        // Blocked key combinations
+        const blockedKeys = [
+            // Windows/Linux shortcuts
+            { ctrl: true, shift: true, key: 'C' },    // Developer Tools
+            { ctrl: true, shift: true, key: 'I' },    // Developer Tools  
+            { ctrl: true, shift: true, key: 'J' },    // Console
+            { ctrl: true, shift: true, key: 'K' },    // Clear Console
+            { ctrl: true, key: 'U' },                 // View Source
+            
+            // Mac shortcuts
+            { meta: true, alt: true, key: 'C' },      // Developer Tools
+            { meta: true, alt: true, key: 'I' },      // Developer Tools
+            { meta: true, alt: true, key: 'J' },      // Console
+            { meta: true, alt: true, key: 'K' },      // Clear Console
+            { meta: true, key: 'U' },                 // View Source
+            
+            // Function keys
+            { key: 'F12' },                           // Developer Tools
+            { key: 'F1' }                             // Help (sometimes dev tools)
+        ];
 
-        // Ctrl + Shift + C block
-        if (event.ctrlKey && event.shiftKey && (event.keyCode == 67)) {
-            event.preventDefault();
-            return false;
+        function blockKey(event) {
+            const key = event.key;
+            const ctrl = event.ctrlKey;
+            const shift = event.shiftKey;
+            const alt = event.altKey;
+            const meta = event.metaKey;
+
+            // Check against blocked combinations
+            for (const blocked of blockedKeys) {
+                if (blocked.key === key &&
+                    (blocked.ctrl === undefined || blocked.ctrl === ctrl) &&
+                    (blocked.shift === undefined || blocked.shift === shift) &&
+                    (blocked.alt === undefined || blocked.alt === alt) &&
+                    (blocked.meta === undefined || blocked.meta === meta)) {
+                    
+                    event.preventDefault();
+                    event.stopPropagation();
+                    return false;
+                }
+            }
         }
 
-        // Ctrl + Shift + I block
-        if (event.ctrlKey && event.shiftKey && (event.keyCode == 73)) {
-            event.preventDefault();
-            return false;
-        }
+        // Add event listeners
+        document.addEventListener('keydown', blockKey, { passive: false });
+        document.addEventListener('keyup', blockKey, { passive: false });
+    })();
 
-        // Ctrl + Shift + J block
-        if (event.ctrlKey && event.shiftKey && (event.keyCode == 74)) {
-            event.preventDefault();
-            return false;
-        }
-
-        // Ctrl + Shift + P block
-        if (event.ctrlKey && event.shiftKey && (event.keyCode == 80)) {
-            event.preventDefault();
-            return false;
-        }
-
-        // Ctrl + P block
-        if (event.ctrlKey && (event.keyCode == 80)) {
-            event.preventDefault();
-            return false;
-        }
-
-        // Command + Option + C block
-        if (((event.keyCode == 91) || (event.keyCode == 93)) && ((event.keyCode == 18) || (event.keyCode == 229)) && (event.keyCode == 67)) {
-            event.preventDefault();
-            return false;
-        }
-
-        // Command + Option + I block
-        if (((event.keyCode == 91) || (event.keyCode == 93)) && ((event.keyCode == 18) || (event.keyCode == 229)) && (event.keyCode == 73)) {
-            event.preventDefault();
-            return false;
-        }
-
-        // Command + Option + J block
-        if (((event.keyCode == 91) || (event.keyCode == 93)) && ((event.keyCode == 18) || (event.keyCode == 229)) && (event.keyCode == 74)) {
-            event.preventDefault();
-            return false;
-        }
-
-        // Command + Option + P block
-        if (((event.keyCode == 91) || (event.keyCode == 93)) && ((event.keyCode == 18) || (event.keyCode == 229)) && (event.keyCode == 80)) {
-            event.preventDefault();
-            return false;
-        }
-
-        // F12 block
-        if (event.keyCode == 123) {
-            event.preventDefault();
-            return false;
-        }
-
-        // Command + O block
-        if (((event.keyCode == 91) || (event.keyCode == 93)) && (event.keyCode == 79)) {
-            event.preventDefault();
-            return false;
-        }
-
-        // Command + P block
-        if (((event.keyCode == 91) || (event.keyCode == 93)) && (event.keyCode == 80)) {
-            event.preventDefault();
-            return false;
-        }
-
-    });
-
-    !function () {
-        function detectDevTool(allow) {
-            if (isNaN(+allow)) allow = 100;
-            var start = +new Date();
+    // Enhanced developer tools detection
+    (function() {
+        'use strict';
+        
+        let devToolsOpen = false;
+        let detectionCount = 0;
+        const maxDetections = 3;
+        
+        function detectDevTools() {
+            const threshold = 100;
+            const start = performance.now();
+            
+            // Use debugger statement to detect dev tools
             debugger;
-            var end = +new Date();
-            if (isNaN(start) || isNaN(end) || end - start > allow) {
-                alert('개발자 도구가 감지되었습니다.');
-            }
-        }
-        if (window.attachEvent) {
-            if (document.readyState === "complete" || document.readyState === "interactive") {
-                detectDevTool();
-                window.attachEvent('onresize', detectDevTool);
-                window.attachEvent('onmousemove', detectDevTool);
-                window.attachEvent('onfocus', detectDevTool);
-                window.attachEvent('onblur', detectDevTool);
+            
+            const end = performance.now();
+            const timeDiff = end - start;
+            
+            if (timeDiff > threshold) {
+                detectionCount++;
+                
+                if (detectionCount >= maxDetections && !devToolsOpen) {
+                    devToolsOpen = true;
+                    handleDevToolsDetection();
+                }
             } else {
-                setTimeout(argument.callee, 0);
+                // Reset counter if dev tools seem closed
+                detectionCount = Math.max(0, detectionCount - 1);
+                devToolsOpen = false;
             }
-        } else {
-            window.addEventListener('load', detectDevTool);
-            window.addEventListener('resize', detectDevTool);
-            window.addEventListener('mousemove', detectDevTool);
-            window.addEventListener('focus', detectDevTool);
-            window.addEventListener('blur', detectDevTool);
         }
-    }();
+        
+        function handleDevToolsDetection() {
+            // You can customize this action
+            alert('개발자 도구가 감지되었습니다.');
+            
+            // Optional: redirect or take other actions
+            // window.location.href = 'about:blank';
+        }
+        
+        // Throttled detection to avoid performance issues
+        let lastDetection = 0;
+        function throttledDetection() {
+            const now = Date.now();
+            if (now - lastDetection > 500) { // Check at most every 500ms
+                lastDetection = now;
+                detectDevTools();
+            }
+        }
+        
+        // Set up event listeners based on browser support
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                setupDetection();
+            });
+        } else {
+            setupDetection();
+        }
+        
+        function setupDetection() {
+            // Initial detection
+            detectDevTools();
+            
+            // Add event listeners
+            const events = ['resize', 'focus', 'blur'];
+            events.forEach(event => {
+                window.addEventListener(event, throttledDetection, { passive: true });
+            });
+            
+            // Periodic check (less frequent to avoid performance impact)
+            setInterval(detectDevTools, 2000);
+        }
+        
+        // Additional context menu blocking
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        }, { passive: false });
+        
+        // Block text selection (optional)
+        document.addEventListener('selectstart', function(e) {
+            e.preventDefault();
+            return false;
+        }, { passive: false });
+        
+    })();
 </script>

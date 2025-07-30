@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Console Blocker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: calc(100vh - 80px);
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        .feature-list li {
+            background: rgba(255, 255, 255, 0.1);
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛡️ Enhanced Console Blocker</h1>
+        <p>이 페이지는 향상된 개발자 도구 차단 기능을 사용합니다.</p>
+        
+        <h2>차단되는 기능들:</h2>
+        <ul class="feature-list">
+            <li>🚫 키보드 단축키 (F12, Ctrl+Shift+I, Ctrl+Shift+C, etc.)</li>
+            <li>🚫 우클릭 컨텍스트 메뉴</li>
+            <li>🚫 텍스트 선택</li>
+            <li>🚫 개발자 도구 실시간 감지</li>
+            <li>🚫 다중 감지 방법으로 우회 방지</li>
+        </ul>
+        
+        <p><strong>참고:</strong> 이러한 차단 방법들은 완벽하지 않으며, 숙련된 개발자는 여전히 우회할 수 있습니다.</p>
+    </div>
+
+<script>
+    // Enhanced Console Blocker - Combined approach
+    (function() {
+        'use strict';
+        
+        // Configuration
+        const config = {
+            detectionThreshold: 100,        // ms delay threshold for debugger detection
+            maxDetectionAttempts: 3,        // number of attempts before triggering action
+            detectionInterval: 2000,        // ms between periodic checks
+            throttleInterval: 500,          // ms throttle for event-based checks
+            enableContextMenu: false,       // allow right-click context menu
+            enableTextSelection: false,     // allow text selection
+            enableKeyboardShortcuts: true,  // block keyboard shortcuts
+            enableDevToolsDetection: true,  // enable active dev tools detection
+        };
+        
+        // State tracking
+        let state = {
+            devToolsOpen: false,
+            detectionCount: 0,
+            lastCheck: 0,
+            initialized: false
+        };
+        
+        // Blocked keyboard shortcuts
+        const blockedShortcuts = [
+            // Windows/Linux
+            { ctrl: true, shift: true, key: 'C' },
+            { ctrl: true, shift: true, key: 'I' },
+            { ctrl: true, shift: true, key: 'J' },
+            { ctrl: true, shift: true, key: 'K' },
+            { ctrl: true, key: 'U' },
+            
+            // Mac
+            { meta: true, alt: true, key: 'C' },
+            { meta: true, alt: true, key: 'I' },
+            { meta: true, alt: true, key: 'J' },
+            { meta: true, alt: true, key: 'K' },
+            { meta: true, key: 'U' },
+            
+            // Function keys
+            { key: 'F12' },
+            { key: 'F1' }
+        ];
+        
+        // Keyboard shortcut blocker
+        function blockKeyboardShortcuts(event) {
+            if (!config.enableKeyboardShortcuts) return;
+            
+            const { key, ctrlKey, shiftKey, altKey, metaKey } = event;
+            
+            for (const blocked of blockedShortcuts) {
+                if (blocked.key === key &&
+                    (blocked.ctrl === undefined || blocked.ctrl === ctrlKey) &&
+                    (blocked.shift === undefined || blocked.shift === shiftKey) &&
+                    (blocked.alt === undefined || blocked.alt === altKey) &&
+                    (blocked.meta === undefined || blocked.meta === metaKey)) {
+                    
+                    event.preventDefault();
+                    event.stopPropagation();
+                    return false;
+                }
+            }
+        }
+        
+        // Developer tools detection methods
+        const detectionMethods = {
+            // Method 1: Debugger timing
+            timing: function() {
+                const start = performance.now();
+                debugger;
+                const end = performance.now();
+                return (end - start) > config.detectionThreshold;
+            },
+            
+            // Method 2: Console access detection
+            console: function() {
+                let detected = false;
+                const image = new Image();
+                
+                Object.defineProperty(image, 'id', {
+                    get: function() {
+                        detected = true;
+                        return 'detected';
+                    }
+                });
+                
+                try {
+                    console.log('%c', image);
+                    console.clear();
+                } catch (e) {
+                    // Ignore errors
+                }
+                
+                return detected;
+            },
+            
+            // Method 3: Function debugger detection
+            function: function() {
+                const debugFunc = new Function('debugger');
+                const start = performance.now();
+                
+                try {
+                    debugFunc();
+                } catch (e) {
+                    return false;
+                }
+                
+                const end = performance.now();
+                return (end - start) > config.detectionThreshold;
+            },
+            
+            // Method 4: Window size detection (less reliable)
+            windowSize: function() {
+                const widthDiff = window.outerWidth - window.innerWidth;
+                const heightDiff = window.outerHeight - window.innerHeight;
+                return widthDiff > 160 || heightDiff > 160;
+            }
+        };
+        
+        // Main detection function
+        function detectDevTools() {
+            if (!config.enableDevToolsDetection) return;
+            
+            try {
+                let positiveDetections = 0;
+                const methodNames = Object.keys(detectionMethods);
+                
+                methodNames.forEach(methodName => {
+                    try {
+                        if (detectionMethods[methodName]()) {
+                            positiveDetections++;
+                        }
+                    } catch (e) {
+                        // Ignore method errors
+                    }
+                });
+                
+                // Require multiple methods to agree (reduces false positives)
+                const isDetected = positiveDetections >= 2;
+                
+                if (isDetected && !state.devToolsOpen) {
+                    state.detectionCount++;
+                    
+                    if (state.detectionCount >= config.maxDetectionAttempts) {
+                        state.devToolsOpen = true;
+                        handleDevToolsDetection();
+                    }
+                } else if (!isDetected && state.detectionCount > 0) {
+                    // Gradually reduce detection count if not detected
+                    state.detectionCount = Math.max(0, state.detectionCount - 1);
+                    if (state.detectionCount === 0) {
+                        state.devToolsOpen = false;
+                    }
+                }
+            } catch (e) {
+                // Fail silently
+            }
+        }
+        
+        // Handle dev tools detection
+        function handleDevToolsDetection() {
+            // Customize this action as needed
+            alert('🚫 개발자 도구가 감지되었습니다!\n이 페이지는 보안을 위해 개발자 도구 사용을 제한합니다.');
+            
+            // Optional additional actions:
+            // window.location.href = 'about:blank';
+            // document.body.innerHTML = '<h1 style="color: red; text-align: center; margin-top: 50px;">⚠️ 접근이 차단되었습니다</h1>';
+        }
+        
+        // Throttled detection for events
+        function throttledDetection() {
+            const now = Date.now();
+            if (now - state.lastCheck > config.throttleInterval) {
+                state.lastCheck = now;
+                detectDevTools();
+            }
+        }
+        
+        // Block context menu
+        function blockContextMenu(event) {
+            if (!config.enableContextMenu) {
+                event.preventDefault();
+                return false;
+            }
+        }
+        
+        // Block text selection
+        function blockTextSelection(event) {
+            if (!config.enableTextSelection) {
+                event.preventDefault();
+                return false;
+            }
+        }
+        
+        // Initialize all protections
+        function initialize() {
+            if (state.initialized) return;
+            
+            // Keyboard shortcuts
+            document.addEventListener('keydown', blockKeyboardShortcuts, { passive: false });
+            document.addEventListener('keyup', blockKeyboardShortcuts, { passive: false });
+            
+            // Context menu
+            document.addEventListener('contextmenu', blockContextMenu, { passive: false });
+            
+            // Text selection
+            document.addEventListener('selectstart', blockTextSelection, { passive: false });
+            document.addEventListener('dragstart', blockTextSelection, { passive: false });
+            
+            // Dev tools detection
+            if (config.enableDevToolsDetection) {
+                // Initial detection after delay
+                setTimeout(detectDevTools, 1000);
+                
+                // Periodic detection
+                setInterval(detectDevTools, config.detectionInterval);
+                
+                // Event-based detection (throttled)
+                ['resize', 'focus', 'blur'].forEach(event => {
+                    window.addEventListener(event, throttledDetection, { passive: true });
+                });
+            }
+            
+            state.initialized = true;
+            console.log('🛡️ Enhanced Console Blocker initialized');
+        }
+        
+        // Start initialization
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initialize);
+        } else {
+            initialize();
+        }
+        
+        // Expose configuration for easy customization
+        window.consoleBlockerConfig = config;
+        
+    })();
+</script>
+
+<!-- Additional CSS to prevent some bypass methods -->
+<style>
+    /* Prevent highlighting */
+    * {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    
+    /* Prevent dragging */
+    * {
+        -webkit-user-drag: none;
+        -khtml-user-drag: none;
+        -moz-user-drag: none;
+        -o-user-drag: none;
+    }
+    
+    /* Hide scrollbars to prevent some detection methods */
+    ::-webkit-scrollbar {
+        display: none;
+    }
+    
+    /* Prevent some dev tools styling */
+    * {
+        outline: none !important;
+    }
+</style>
+
+</body>
+</html>
