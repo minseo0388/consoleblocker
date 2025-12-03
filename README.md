@@ -40,7 +40,7 @@ A comprehensive JavaScript-based solution for blocking developer tools access an
 ## 📁 Files
 
 - `blocker.html` - Improved keyboard shortcut and basic dev tools detection
-- `detect.html` - Enhanced multi-method developer tools detection
+- `detect.js` - Enhanced multi-method developer tools detection script
 - `enhanced-blocker.html` - **Recommended** - Complete solution with all features
 
 ## 🚀 Usage

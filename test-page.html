@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,7 +14,7 @@
             color: white;
             min-height: 100vh;
         }
-        
+
         .container {
             max-width: 1000px;
             margin: 0 auto;
@@ -23,43 +24,43 @@
             backdrop-filter: blur(10px);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
-        
+
         h1 {
             text-align: center;
             margin-bottom: 30px;
             font-size: 2.5em;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
-        
+
         .status-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 20px;
             margin: 30px 0;
         }
-        
+
         .status-card {
             background: rgba(255, 255, 255, 0.1);
             padding: 20px;
             border-radius: 15px;
             border-left: 5px solid #4CAF50;
         }
-        
+
         .status-card.warning {
             border-left-color: #ff9800;
         }
-        
+
         .status-card.danger {
             border-left-color: #f44336;
         }
-        
+
         .test-buttons {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
             margin: 30px 0;
         }
-        
+
         button {
             background: linear-gradient(45deg, #4CAF50, #45a049);
             color: white;
@@ -72,27 +73,27 @@
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
-        
+
         button:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
         }
-        
+
         button.warning {
             background: linear-gradient(45deg, #ff9800, #f57c00);
         }
-        
+
         button.danger {
             background: linear-gradient(45deg, #f44336, #d32f2f);
         }
-        
+
         .info-section {
             margin: 30px 0;
             padding: 20px;
             background: rgba(255, 255, 255, 0.05);
             border-radius: 15px;
         }
-        
+
         .protection-list {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -100,7 +101,7 @@
             list-style: none;
             padding: 0;
         }
-        
+
         .protection-list li {
             background: rgba(255, 255, 255, 0.1);
             padding: 15px;
@@ -109,18 +110,18 @@
             display: flex;
             align-items: center;
         }
-        
+
         .protection-list li::before {
             content: '🛡️';
             margin-right: 10px;
             font-size: 1.2em;
         }
-        
+
         #status {
             font-weight: bold;
             font-size: 1.1em;
         }
-        
+
         .footer {
             text-align: center;
             margin-top: 50px;
@@ -131,10 +132,11 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h1>🛡️ Console Blocker Test Page</h1>
-        
+
         <div class="status-grid">
             <div class="status-card">
                 <h3>🔒 Protection Status</h3>
@@ -145,7 +147,7 @@
                 <p>이 페이지는 개발자 도구 차단 기능을 테스트합니다.</p>
             </div>
         </div>
-        
+
         <div class="info-section">
             <h2>🚫 차단되는 기능들</h2>
             <ul class="protection-list">
@@ -159,7 +161,7 @@
                 <li>네트워크 모니터링 감지</li>
             </ul>
         </div>
-        
+
         <div class="info-section">
             <h2>🧪 테스트 버튼</h2>
             <div class="test-buttons">
@@ -171,7 +173,7 @@
                 <button onclick="showDebugInfo()">디버그 정보 표시</button>
             </div>
         </div>
-        
+
         <div class="info-section">
             <h2>📋 사용 방법</h2>
             <ol>
@@ -182,7 +184,7 @@
             </ol>
             <p><strong>참고:</strong> URL에 <code>?debug=true</code>를 추가하면 디버그 모드가 활성화됩니다.</p>
         </div>
-        
+
         <div class="footer">
             <p>Made with ❤️ by Console Blocker Team</p>
             <p>Version 2.1 - Enhanced Security Features</p>
@@ -190,16 +192,16 @@
     </div>
 
     <!-- Include the enhanced detection script -->
-    <script src="detect.html"></script>
-    
+    <script src="detect.js"></script>
+
     <script>
         // Test page specific functions
         let testResults = [];
-        
+
         function updateStatus() {
             const statusElement = document.getElementById('status');
             const isDebugMode = window.location.search.includes('debug=true');
-            
+
             if (isDebugMode) {
                 statusElement.innerHTML = '🔧 디버그 모드 활성화<br><small>개발자 도구 사용 가능</small>';
                 statusElement.parentElement.className = 'status-card warning';
@@ -208,31 +210,31 @@
                 statusElement.parentElement.className = 'status-card';
             }
         }
-        
+
         function testConsoleLog() {
             console.log('Console.log 테스트 실행됨');
             alert('Console.log가 실행되었습니다. 콘솔을 확인해보세요.');
         }
-        
+
         function testDebugger() {
             alert('Debugger 테스트를 시작합니다. 개발자 도구가 열려있다면 일시정지될 수 있습니다.');
             debugger;
             alert('Debugger 테스트 완료');
         }
-        
+
         function testAlert() {
             alert('Alert 테스트가 정상적으로 작동합니다!');
         }
-        
+
         function testWindowResize() {
             const original = {
                 width: window.outerWidth,
                 height: window.outerHeight
             };
-            
+
             alert(`현재 창 크기: ${original.width}x${original.height}\n창 크기를 변경해보세요.`);
         }
-        
+
         function runAllTests() {
             if (confirm('모든 테스트를 실행하시겠습니까? 개발자 도구가 열려있다면 여러 번의 경고가 표시될 수 있습니다.')) {
                 testConsoleLog();
@@ -241,7 +243,7 @@
                 setTimeout(() => testWindowResize(), 3000);
             }
         }
-        
+
         function showDebugInfo() {
             const info = {
                 userAgent: navigator.userAgent,
@@ -250,19 +252,20 @@
                 debugMode: window.location.search.includes('debug=true'),
                 timestamp: new Date().toLocaleString()
             };
-            
+
             const infoText = Object.entries(info)
                 .map(([key, value]) => `${key}: ${value}`)
                 .join('\n');
-                
+
             alert(`디버그 정보:\n\n${infoText}`);
         }
-        
+
         // Initialize status on page load
         document.addEventListener('DOMContentLoaded', updateStatus);
-        
+
         // Update status when URL changes
         window.addEventListener('popstate', updateStatus);
     </script>
 </body>
+
 </html>
