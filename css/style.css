@@ -1,0 +1,91 @@
+/* Console Blocker Styles */
+
+/* Prevent highlighting */
+* {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Prevent dragging */
+* {
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+}
+
+/* Hide scrollbars to prevent some detection methods */
+::-webkit-scrollbar {
+    display: none;
+}
+
+/* Prevent some dev tools styling */
+* {
+    outline: none !important;
+}
+
+/* Warning Overlay Styles */
+#dev-tools-warning {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999999;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    backdrop-filter: blur(5px);
+}
+
+.cb-overlay-content {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 40px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+    max-width: 500px;
+    width: 90%;
+}
+
+.cb-title {
+    color: #ff4444;
+    margin-bottom: 20px;
+    font-size: 2em;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.cb-message {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.cb-submessage {
+    font-size: 1em;
+    opacity: 0.8;
+    margin-bottom: 30px;
+}
+
+.cb-footer {
+    font-size: 0.9em;
+    opacity: 0.6;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 20px;
+}
+
+.cb-debug {
+    margin-top: 20px;
+    font-family: monospace;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 0.8em;
+    color: #ffd700;
+}
